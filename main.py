@@ -1,16 +1,42 @@
-# This is a sample Python script.
-
-# Press ⌃F5 to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+import discord 
+from discord.ext import commands 
+import logging 
+from dotenv import load_dotenv
+import os 
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+load_dotenv()
+token = os.getenv('DISCORD_TOKEN')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+handler = logging.FileHandler(filename='discord.log',encoding='utf-8',mode = 'w')
+intents = discord.Intents.default()
+intents.message_content= True
+intents.members = True
+
+
+bot = commands.Bot(command_prefix='.',intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'We are ready for launch,{bot.user.name}')
+
+@bot.event
+async def on_memeber_join(member):
+    await member.send(f"{member.name}Welcome to my bot testing server")
+
+@bot.event 
+async def on_message(message):
+    if message.author == bot.user:
+        return
+
+    if "muji" in message.content.lower():
+        # await message.delete()
+        await message.channel.send(f"{message.author.mention} testo na bola na")
+    
+    await bot.process_commands(message)
+        
+
+
+bot.run(token,log_handler= handler,log_level=logging.DEBUG)
+
